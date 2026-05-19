@@ -48,10 +48,10 @@
         <div class="p-4 border-t border-slate-100">
             <div class="bg-slate-900 rounded-2xl p-4 text-white">
                 <p class="text-[10px] text-slate-500 mb-1 uppercase tracking-wider font-semibold">Signed in as</p>
-                <p class="text-sm font-bold font-display">Product Manager</p>
+                <p class="text-[20px] font-bold font-display">Product Manager</p>
                 <div class="mt-3 flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                    <span class="text-[10px] text-slate-400 font-medium">System Online</span>
+                    <span class="text-[10px] text-slate-200 font-medium">System Online</span>
                 </div>
             </div>
         </div>
@@ -299,20 +299,32 @@ function getMetrics() {
     const unresolved = total - resolved;
     const resolutionRate = total > 0 ? ((resolved / total) * 100).toFixed(1) : 0;
     const resolutionRateNum = parseFloat(resolutionRate);
-    // Derive a simple satisfaction level from resolution rate
-    let satisfaction = 'Low';
+    // Derive a satisfaction card state from resolution rate
+    let satisfaction = 'Bad';
+    let satisfactionCardClass = 'bg-red-500';
+    let satisfactionEmoji = '😡';
     let satisfactionColorClass = 'text-rose-700 bg-rose-50 border-rose-200';
     let satisfactionDotClass = 'bg-rose-400';
-    if (resolutionRateNum >= 90) {
-        satisfaction = 'High';
+    if (resolutionRateNum > 80) {
+        satisfaction = 'Excellent';
+        satisfactionCardClass = 'bg-green-500';
+        satisfactionEmoji = '😆';
         satisfactionColorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
         satisfactionDotClass = 'bg-emerald-400';
-    } else if (resolutionRateNum >= 75) {
-        satisfaction = 'Medium';
-        satisfactionColorClass = 'text-amber-700 bg-amber-50 border-amber-200';
-        satisfactionDotClass = 'bg-amber-400';
+    } else if (resolutionRateNum > 60) {
+        satisfaction = 'Okay';
+        satisfactionCardClass = 'bg-blue-500';
+        satisfactionEmoji = '😄';
+        satisfactionColorClass = 'text-sky-700 bg-sky-50 border-sky-200';
+        satisfactionDotClass = 'bg-sky-400';
+    } else if (resolutionRateNum > 20) {
+        satisfaction = 'Not okay';
+        satisfactionCardClass = 'bg-purple-500';
+        satisfactionEmoji = '😣';
+        satisfactionColorClass = 'text-violet-700 bg-violet-50 border-violet-200';
+        satisfactionDotClass = 'bg-violet-400';
     }
-    return { total, unresolved, resolutionRate: `${resolutionRate}%`, resolutionRateNum, newCount: feedbackList.filter(f => f.status === 'Not contact yet').length, satisfaction, satisfactionColorClass, satisfactionDotClass };
+    return { total, unresolved, resolutionRate: `${resolutionRate}%`, resolutionRateNum, newCount: feedbackList.filter(f => f.status === 'Not contact yet').length, satisfaction, satisfactionCardClass, satisfactionEmoji, satisfactionColorClass, satisfactionDotClass };
 }
 
 function getDepartmentStats() {
@@ -594,10 +606,10 @@ function renderContent() {
                         <p class="text-xs font-medium text-slate-400">Goal: Keep &gt; 90%</p>
                     </div>
                 </div>
-                <div class="${metrics.satisfactionDotClass === 'bg-emerald-400' ? 'bg-green-500' : metrics.satisfactionDotClass === 'bg-amber-400' ? 'bg-amber-500' : 'bg-rose-500'} text-white p-6 rounded-3xl shadow-md flex flex-col justify-between h-40 border-none">
+                <div class="${metrics.satisfactionCardClass} text-white p-6 rounded-3xl shadow-md flex flex-col justify-between h-40 border-none">
                     <div class="flex justify-between items-start">
                         <span class="text-sm font-bold opacity-90">Customer Satisfaction</span>
-                        <span class="text-2xl">😊</span>
+                        <span class="text-2xl">${metrics.satisfactionEmoji}</span>
                     </div>
                     <div>
                         <h3 class="text-xl font-black mb-1">${metrics.satisfaction}</h3>
